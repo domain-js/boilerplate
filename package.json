@@ -1,0 +1,24 @@
+{
+  "name": "@domain.js/boilerplate",
+  "version": "0.1.0",
+  "description": "DDD boilerplate",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "jest ./src --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/domain-js/boilerplate.git"
+  },
+  "keywords": [
+    "DDD",
+    "domain.js",
+    "Restful"
+  ],
+  "author": "Redstone Zhao",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/domain-js/boilerplate/issues"
+  },
+  "homepage": "https://github.com/domain-js/boilerplate#readme"
+}
