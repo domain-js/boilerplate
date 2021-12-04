@@ -4,7 +4,8 @@
   "description": "DDD boilerplate",
   "main": "dist/index.js",
   "scripts": {
-    "test": "jest ./src --coverage"
+    "test": "jest ./src --coverage",
+    "autoLoad": "domain-cli loadDeps . ts && domain-cli loadServices . ts && domain-cli deepLoadModule ./src/services/_schemas ./src/services/schemas.ts"
   },
   "repository": {
     "type": "git",
@@ -22,6 +23,22 @@
   },
   "homepage": "https://github.com/domain-js/boilerplate#readme",
   "dependencies": {
-    "@domain.js/main": "^0.1.0"
+    "@domain.js/main": "^0.1.0",
+    "gm": "^1.23.1",
+    "prettier": "^2.3.0",
+    "ts-jest": "^27.0.7",
+    "ts-node": "^10.4.0",
+    "type-fest": "^2.8.0",
+    "typescript": "^4.5.2"
+  },
+  "prettier": {
+    "printWidth": 100,
+    "trailingComma": "all"
+  },
+  "lint-staged": {
+    "**/*.{js,ts}": [
+      "prettier --write",
+      "eslint --fix"
+    ]
   }
 }
