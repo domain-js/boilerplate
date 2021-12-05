@@ -1,4 +1,4 @@
-import { Errors } from "@domain.js/main";
+import { Errors, basicErrors } from "@domain.js/main";
 
 const defines = [
   ["notFound", "Resource not found"],
@@ -19,4 +19,4 @@ const defines = [
   ["schemesUnmatched", "Schema match faild"],
 ] as const;
 
-export const errors = Object.freeze(Errors(defines));
+export const errors = Object.freeze({ ...basicErrors, ...Errors(defines) });

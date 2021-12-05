@@ -13,5 +13,6 @@ const inits = {
   utils,
 };
 
+console.log("utils entrance: %o", inits.utils);
 // 冻结，以免被无故篡改
 export const deps = Object.freeze(DM.auto(Modules, inits, [cnf, inits]));

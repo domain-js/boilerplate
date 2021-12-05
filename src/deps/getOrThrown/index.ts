@@ -1,7 +1,7 @@
 import { TModel } from "@domain.js/main/dist/deps/rest/defines";
-import { ErrorFn } from "@domain.js/main/dist/errors";
+import { ErrorFn } from "@domain.js/main/dist/Errors";
 import { Model } from "sequelize/types";
-import { deps } from "../../deps.d";
+import { deps } from "../../deps";
 
 type Deps = Pick<typeof deps, "errors">;
 

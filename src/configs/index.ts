@@ -1,8 +1,6 @@
 import * as path from "path";
-import * as Sequelize from "sequelize";
-import Cfg from "./env";
 
-const cfg = Cfg();
+const cfg = (key: string, defaults?: any) => process.env[key] || key;
 
 const storagePath = cfg("STORAGE_PATH", path.resolve(__dirname, "../../storage"));
 
@@ -65,7 +63,7 @@ export const cnf = {
     // 并发控制的key, 存储单元
     key: "parallel-control",
     // 超过多长时间会被清理
-    defaultErrorFn: (p) => Error(`并发控制，禁止同一时间多次请求: ${p}`),
+    defaultErrorFn: (p: any) => Error(`并发控制，禁止同一时间多次请求: ${p}`),
   },
 
   // 计数器相关设置
@@ -86,7 +84,7 @@ export const cnf = {
   sequelize: {
     db: {
       host: cfg("DB_HOST", "127.0.0.1"),
-      port: cfg("DB_PORT", 3306),
+      port: 3306,
       database: cfg("DB_NAME", "redstone"),
       username: cfg("DB_USER", "root"),
       password: cfg("DB_PASS"),
@@ -113,8 +111,8 @@ export const cnf = {
         /** 单位毫秒 */
         idle: 300 * 1000,
       },
-    } as const,
-  },
+    },
+  } as const,
 
   /** redis 配置信息, 使用 ioredis 的options格式 */
   redis: {
