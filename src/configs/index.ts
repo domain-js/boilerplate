@@ -1,10 +1,12 @@
 import * as path from "path";
+import { Cfg } from "@domain.js/main";
+import { schema } from "./cnf.schema";
 
-const cfg = (key: string, defaults?: any) => process.env[key] || key;
+const cfg = Cfg(process.env, schema);
 
-const storagePath = cfg("STORAGE_PATH", path.resolve(__dirname, "../../storage"));
+const storagePath = cfg("STORAGE_PATH") || path.resolve(__dirname, "../../storage");
 
-type VERBS = ("post" | "get" | "put" | "delete")[];
+type VERBS = ("post" | "get" | "put" | "patch" | "delete")[];
 export const cnf = {
   features: [
     "aes" /** AES 加解密模块 */,
@@ -35,7 +37,7 @@ export const cnf = {
   },
 
   // 模式，手动模式下，一切自动执行的脚本需要停止
-  mode: cfg("MODE", "auto"),
+  mode: cfg("MODE") || "auto",
 
   // schema 通用模块配置
   schema: {
@@ -83,10 +85,10 @@ export const cnf = {
   /** 数据库配置 */
   sequelize: {
     db: {
-      host: cfg("DB_HOST", "127.0.0.1"),
-      port: 3306,
-      database: cfg("DB_NAME", "redstone"),
-      username: cfg("DB_USER", "root"),
+      host: cfg("DB_HOST") || "127.0.0.1",
+      port: Number(cfg("DB_PORT")) || 3306,
+      database: cfg("DB_NAME") || "redstone",
+      username: cfg("DB_USER") || "root",
       password: cfg("DB_PASS"),
       dialect: "mysql",
       dialectOptions: {
@@ -116,15 +118,15 @@ export const cnf = {
 
   /** redis 配置信息, 使用 ioredis 的options格式 */
   redis: {
-    host: cfg("REDIS_HOST", "127.0.0.1"),
-    port: cfg("REDIS_PORT", 6379),
-    keyPrefix: cfg("REDIS_PRE", "DJD::"),
+    host: cfg("REDIS_HOST") || "127.0.0.1",
+    port: Number(cfg("REDIS_PORT")) || 6379,
+    keyPrefix: cfg("REDIS_PRE") || "DJD::",
   },
 
   /** 文件上传的若干设定 */
   upload: {
     /** 文件存储路径 */
-    dir: cfg("UPLOAD_DIR", path.resolve(storagePath, "files")),
+    dir: cfg("UPLOAD_DIR") || path.resolve(storagePath, "files"),
 
     /**
      * 不允许的后缀，包括压缩包里的，如果要求解压的时候也要判断
