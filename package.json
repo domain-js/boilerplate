@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/domain-js/boilerplate#readme",
   "dependencies": {
-    "@domain.js/main": "^0.1.0",
+    "@domain.js/main": "^0.1.2",
     "gm": "^1.23.1",
     "prettier": "^2.3.0",
     "ts-jest": "^27.0.7",
