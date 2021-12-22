@@ -24,5 +24,5 @@ export function After(...args: any[]) {
     cacheKeyFn,
   );
 
-  cia.link("Auth.afterDestroy", "cleanCache", ([{ token }]) => cache.del(cacheKeyFn(token)));
+  cia.link("Auth.afterDestroy", "cleanCache", ([{ token }]: any) => cache.del(cacheKeyFn(token)));
 }

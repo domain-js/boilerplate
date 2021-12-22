@@ -1,6 +1,7 @@
 import { ModelExtraAtts } from "@domain.js/main/dist/deps/rest/defines";
 import { ReadonlyArray2union } from "@domain.js/main/dist/types/index";
 import type { TDeps } from "../../deps";
+import type { Attrs as UserAttrs } from "../User";
 
 export { After } from "./After";
 
@@ -38,7 +39,7 @@ export function Main(cnf: any, deps: Deps) {
     public onlineIp!: string;
     public creatorId!: number;
 
-    static generate(user: User, onlineIp: string, deviceId?: string) {
+    static generate(user: UserAttrs, onlineIp: string, deviceId?: string) {
       return Model.create({
         token: `user_${randStr(64, "normal")}`,
         expiredAt: new Date(Date.now() + 1000 * (consts.TOKEN_LIFE_SECONDS || 1 * 86400)),

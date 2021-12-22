@@ -15,7 +15,7 @@ export const Deps = [
 
 type Deps = Pick<TDeps, ReadonlyArray2union<typeof Deps>>;
 
-interface Attrs {
+export interface Attrs {
   id: number;
   name: string;
   mobile: string;
