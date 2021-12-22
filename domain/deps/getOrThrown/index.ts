@@ -1,29 +1,29 @@
-import { TModel } from "@domain.js/main/dist/deps/rest/defines";
 import { ErrorFn } from "@domain.js/main/dist/Errors";
-import { Model } from "sequelize/types";
+import { ReadonlyArray2union } from "@domain.js/main/dist/types";
 import { deps } from "../../deps";
 
-type Deps = Pick<typeof deps, "errors">;
+export const Deps = ["Sequelize", "errors"] as const;
+
+type Deps = Pick<typeof deps, ReadonlyArray2union<typeof Deps>>;
 
 export function Main(cnf: any, deps: Deps) {
   const { errors } = deps;
 
-  return async (
-    Model: TModel,
+  return async <T>(
+    Model: { new (...args: any[]): T },
     id: string | number,
-    opt: Parameters<typeof Model.findByPk>[1],
-    error: ErrorFn,
-  ) => {
+    opt?: any,
+    error?: ErrorFn,
+  ): Promise<T> => {
     let one;
     if (opt) {
       one = await (Model as any).findByPk(id, opt);
     } else {
-      one = await (Model as any).getByPk(id);
+      one = await (Model as any).findByPk(id);
     }
-    if (!one || one.isDeleted === "yes") throw error || errors.notFound(`${Model.name}: ${id}`);
+    if (!one || (one as any).isDeleted === "yes")
+      throw error || errors.notFound(`${Model.name}: ${id}`);
 
-    return one as Model;
+    return one;
   };
 }
-
-export const Deps = ["errors"];

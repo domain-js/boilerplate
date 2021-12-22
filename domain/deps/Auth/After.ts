@@ -1,5 +1,5 @@
 import type { TDeps } from "../../deps";
-import type { Main } from "./Main";
+import type { Main } from ".";
 
 type Deps = Pick<TDeps, "cia" | "cache" | "consts">;
 type TModel = ReturnType<typeof Main>;

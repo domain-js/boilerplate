@@ -16,7 +16,10 @@ const defines = [
   ["noAuth", "Not authentication"],
   ["uselessRequest", "Useless request"],
   ["domainMethodCallArgsInvalid", "domain method Illegal parameter"],
+  ["userNameDuplication", "The user name exist already"],
+  ["userMobileDuplication", "The user mobile exist already"],
   ["schemesUnmatched", "Schema match faild"],
+  ["newPasswordSameOriginPassword", "Cannt set the password that be equal last password"],
 ] as const;
 
 export const errors = Object.freeze({ ...basicErrors, ...Errors(defines) });

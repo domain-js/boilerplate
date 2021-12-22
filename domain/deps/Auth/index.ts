@@ -52,16 +52,17 @@ export function Main(cnf: any, deps: Deps) {
       const auth = await Model.findOne({ where: { token } });
       if (!auth) throw errors.tokenError(token);
       if (auth.expiredAt < new Date()) throw errors.tokenError(token);
-      const user = await User.getByPk(auth.creatorId);
+      const user = await User.findByPk(auth.creatorId);
       if (!user) throw errors.tokenErrorUserNotExisits(token);
       if (user.status === "disabled")
         throw errors.tokenErrorUserStatusDisabled(user.id, user.status);
       if (user.isDeleted === "yes") throw errors.tokenErrorUserBeenDeleted(user.id);
-      const json = user.toJSON();
-      json.auth = auth.toJSON();
-      json.token = token;
-      json._type = "user";
-      json._id = `user-${json.id}`;
+      const json = Object.assign(user.toJSON(), {
+        auth: auth.toJSON(),
+        token,
+        _type: "user",
+        _id: `user-${user.id}`,
+      });
 
       return json;
     }
@@ -124,3 +125,9 @@ export function Main(cnf: any, deps: Deps) {
 
   return Object.assign(Model, Expandeds);
 }
+
+export type Session = ReturnType<ReturnType<typeof Main>["readUserByToken"]> extends Promise<
+  infer R
+>
+  ? R
+  : never;

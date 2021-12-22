@@ -80,7 +80,6 @@ export function Main(cnf: any, deps: Deps) {
       return _.omit(this.get(), USER_PROTECT_FIELDS) as any;
     }
   }
-
   Model.init(
     {
       id: {

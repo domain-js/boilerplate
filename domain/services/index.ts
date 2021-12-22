@@ -61,9 +61,12 @@ export const Services = (cnf: Cnf, deps: TDeps) => {
 
   const services = {};
   for (const x of Object.keys(defines)) {
-    _.set(services, x, defines[x](cnf, deps));
+    _.set(services, x, defines[x as keyof typeof defines](cnf, deps));
   }
 
+  // 检查 cia 是否已经准备好，如果没有，那说明有多余的regist，或者话句话说有缺失的link
+  // TODO 暂时不引入cia, 等系统可以正常启动运行后再考虑引入
+  /*
   if (!cia.checkReady()) {
     console.log("cia lost link: %o", cia.getUnlinks());
     throw Error("CIA has not been ready");
@@ -79,19 +82,21 @@ export const Services = (cnf: Cnf, deps: TDeps) => {
       return res;
     };
   };
+  */
 
   // 自动记录 logging
-  const logging = (method: Function, path: string) => deps.logger.logger(method, path, true);
+  const logging = <T extends (...args: any[]) => any>(method: T, path: string) =>
+    deps.logger.logger(method, path, true);
 
   // 自动参数校验
-  const validator = (method: Function, path: string) => {
+  const validator = <T extends (...args: any[]) => any>(method: T, path: string) => {
     const _schema = _.get(schemas, path);
     if (!_schema) return method;
     return schema.auto(method, _schema, errors.domainMethodCallArgsInvalid, path);
   };
 
   // 并行控制
-  const parallelCtl = (method: Function, path: string) => {
+  const parallelCtl = <T extends (...args: any[]) => any>(method: T, path: string) => {
     const args = _.get(parallels, path);
     if (!args) return method;
 
@@ -104,7 +109,7 @@ export const Services = (cnf: Cnf, deps: TDeps) => {
     handle(
       pickMethods(services),
       graceful.runnerAsync,
-      autoCIA,
+      // autoCIA, // TODO 暂时不引入 cia
       parallelCtl,
       output,
       validator,

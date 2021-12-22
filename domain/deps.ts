@@ -1,3 +1,4 @@
+import { ReadonlyArray2union } from "@domain.js/main/dist/types";
 import { Main, DM } from "@domain.js/main";
 import { cnf } from "./configs";
 import { errors } from "./errors";
@@ -19,3 +20,8 @@ const inits = {
 export const deps = Object.freeze(DM.auto(Modules, inits, [cnf, inits]));
 
 export type TDeps = typeof deps;
+
+type ModelMains = Pick<typeof Modules, ReadonlyArray2union<typeof consts.MODELS>>;
+export type Models = {
+  [k in keyof ModelMains]: ReturnType<ModelMains[k]["Main"]>;
+};

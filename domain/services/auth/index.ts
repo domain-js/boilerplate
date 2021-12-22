@@ -1,15 +1,13 @@
-import { Profile } from "@domain.js/main/dist/http/defines";
 import { Cnf } from "../../configs";
 import type { TDeps } from "../../deps";
+import { Profile } from "../_schemas/profile";
+import { Profile as ProfileHasToken } from "../_schemas/profile-has-token";
+import { Params as AddParams } from "./schemas/add";
 
-interface Token {
-  token: string;
-}
-
-export = (cnf: Cnf, deps: TDeps) => {
+export function Main(cnf: Cnf, deps: TDeps) {
   const { errors, hUser, hSession, Auth } = deps;
 
-  const add = async ({ realIp }: Profile, params: any) => {
+  const add = async ({ realIp }: Profile, params: AddParams) => {
     const { mobile, password, deviceId } = params;
 
     const user = await hUser.auth(realIp, mobile, password);
@@ -28,7 +26,7 @@ export = (cnf: Cnf, deps: TDeps) => {
     return json;
   };
 
-  const remove = async ({ token }: Profile & Token) => {
+  const remove = async ({ token }: ProfileHasToken) => {
     await hSession({ token });
     const auth = await Auth.findOne({ where: { token } });
     if (auth) await auth.destroy();
@@ -36,7 +34,7 @@ export = (cnf: Cnf, deps: TDeps) => {
     return true;
   };
 
-  const detail = async (profile: Profile & Token) => hSession(profile);
+  const detail = async (profile: ProfileHasToken) => hSession(profile);
 
   return { detail, add, remove };
-};
+}
