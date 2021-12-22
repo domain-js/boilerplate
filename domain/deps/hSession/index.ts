@@ -1,18 +1,17 @@
+import { ReadonlyArray2union } from "@domain.js/main/dist/types";
 import { Cnf } from "../../configs";
-import { deps } from "../../deps";
+import type { TDeps } from "../../deps";
 
-type Deps = Pick<typeof deps, "Auth">;
+export const Deps = ["Auth"] as const;
 
-function Helper(cnf: Cnf, deps: Deps) {
+type Deps = Pick<TDeps, ReadonlyArray2union<typeof Deps>>;
+
+export function Main(cnf: Cnf, deps: Deps) {
   const { Auth } = deps;
 
-  return async ({ token }) => {
+  return ({ token }) => {
     if (token) return Auth.readUserByToken(token);
 
     return null;
   };
 }
-
-Helper.Deps = ["Auth"];
-
-module.exports = Helper;

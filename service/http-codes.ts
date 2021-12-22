@@ -1,4 +1,4 @@
-export const codes = Object.freeze({
+export const httpCodes = {
   notFound: 404,
   notAllowed: 403,
   tokenError: 403,
@@ -11,4 +11,4 @@ export const codes = Object.freeze({
   noAuth: 401,
   schemesUnmatched: 422,
   domainMethodCallArgsInvalid: 422,
-});
+};
