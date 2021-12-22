@@ -1,11 +1,13 @@
-import { deps } from "../../deps";
+import type { TDeps } from "../../deps";
 import type { Main } from "./Main";
 
-type Deps = Pick<typeof deps, "cia" | "cache" | "consts">;
+type Deps = Pick<TDeps, "cia" | "cache" | "consts">;
+type TModel = ReturnType<typeof Main>;
 
-type Model = ReturnType<typeof Main>;
+export function After(...args: any[]) {
+  const Model = args[0] as TModel;
+  const deps = args[2] as Deps;
 
-export function After(Model: Model, cnf: any, deps: Deps) {
   const {
     cia,
     cache,

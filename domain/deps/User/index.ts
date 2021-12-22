@@ -1,6 +1,6 @@
 import { ModelExtraAtts } from "@domain.js/main/dist/deps/rest/defines";
 import { ReadonlyArray2union } from "@domain.js/main/dist/types/index";
-import { deps } from "../../deps";
+import type { TDeps } from "../../deps";
 
 export const Deps = [
   "_",
@@ -13,7 +13,6 @@ export const Deps = [
   "parallel",
 ] as const;
 
-type TDeps = typeof deps;
 type Deps = Pick<TDeps, ReadonlyArray2union<typeof Deps>>;
 
 interface Attrs {
@@ -94,7 +93,7 @@ export function Main(cnf: any, deps: Deps) {
         type: DataTypes.STRING(64),
         allowNull: true,
         set(val: string) {
-          return this.setDataValue("name", nt2space(val));
+          (this as any).setDataValue("name", nt2space(val));
         },
         unique: true,
         validate: {
