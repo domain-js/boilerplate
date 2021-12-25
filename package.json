@@ -25,6 +25,7 @@
   "homepage": "https://github.com/domain-js/boilerplate#readme",
   "dependencies": {
     "@domain.js/main": "^0.1.5",
+    "@types/text-table": "^0.2.2",
     "gm": "^1.23.1",
     "text-table": "^0.2.0"
   },

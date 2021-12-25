@@ -1,4 +1,4 @@
-import Table from "text-table";
+import * as Table from "text-table";
 import { ReadonlyArray2union } from "@domain.js/main/dist/types/index";
 import type { TDeps } from "../../deps";
 
