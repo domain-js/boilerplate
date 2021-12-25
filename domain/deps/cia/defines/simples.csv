@@ -1,0 +1,13 @@
+Code.afterCreate,send,60000
+Auth.afterDestroy,cleanCache,1000
+File.afterCreate,resizeImage,5000
+Redeem.afterCreate,pointLog,1000
+Like.afterCreate,pointLog,1000
+Comment.afterUpdate,pointLog,1000
+Like.afterCreate,likesIncrement,1000
+Comment.afterUpdate,commentsIncrement,1000
+Clue.afterUpdate,pointLog,1000
+Clean.afterUpdate,pointLog,1000
+Support.afterUpdate,pointLog,1000
+PointLog.afterCreate,pointIncrement,1000
+redeem.refused,pointRefund,1000
