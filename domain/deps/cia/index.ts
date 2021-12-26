@@ -17,11 +17,9 @@ export function Main(cnf: any, deps: Deps, defines: Define[]) {
 
   const modelNames = new Set<string>(MODELS);
 
-  console.log("defines", defines);
   for (const [name, ...rest] of defines) {
     if (name.startsWith("domain.")) myCia.domainPaths.add(name);
     if (modelNames.has(name.split(".")[0])) myCia.modelHooks.add(name);
-    console.log(name, ...rest);
     myCia.regist(name, ...rest);
   }
 
