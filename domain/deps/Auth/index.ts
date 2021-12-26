@@ -1,13 +1,9 @@
 import { ModelExtraAtts } from "@domain.js/main/dist/deps/rest/defines";
-import { ReadonlyArray2union } from "@domain.js/main/dist/types/index";
-import type { TDeps } from "../../deps";
 import type { Attrs as UserAttrs } from "../User";
+import type { Deps } from "./Deps";
 
 export { After } from "./After";
-
-export const Deps = ["consts", "utils", "errors", "cia", "User", "sequelize", "Sequelize"] as const;
-
-type Deps = Pick<TDeps, ReadonlyArray2union<typeof Deps>>;
+export { Deps } from "./Deps";
 
 interface Attrs {
   id: number;
