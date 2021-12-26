@@ -24,10 +24,4 @@ export function routers(r: ReturnType<typeof Router>) {
   r.resource("user");
   r.put("/users/:id/status/:value", "user.changeStatus");
   r.put("/users/:id/role/:value", "user.changeRole");
-
-  /** 上传图片相关 */
-  r.collection("file", undefined, "user");
-  r.get("/files/:id", "file.detail");
-  r.del("/files/:id", "file.remove", 204);
-  r.get("/files", "file.list", 200, IS_LIST);
 }

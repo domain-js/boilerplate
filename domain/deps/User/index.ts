@@ -7,6 +7,7 @@ export const Deps = [
   "U",
   "cia",
   "Sequelize",
+  "ModelBase",
   "utils",
   "sequelize",
   "consts",
@@ -34,6 +35,7 @@ export function Main(cnf: any, deps: Deps) {
   const {
     _,
     U: { randStr, nt2space, md5 },
+    ModelBase,
     Sequelize,
     sequelize: { db: sequelize },
     consts: { USER_PROTECT_FIELDS },
@@ -41,7 +43,7 @@ export function Main(cnf: any, deps: Deps) {
 
   const { DataTypes } = Sequelize;
 
-  class Model extends Sequelize.Model<Attrs, Attrs4Create> implements Attrs {
+  class Model extends ModelBase<Attrs, Attrs4Create> implements Attrs {
     public id!: number;
     public name!: string;
     /* 用户手机号码 */

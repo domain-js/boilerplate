@@ -3,5 +3,5 @@ import { domain, getSchemaByPath } from "../domain";
 import { httpCodes } from "./http-codes";
 import { routers } from "./routers";
 
-const Start = Http({}, { domain, getSchemaByPath, httpCodes, routers });
+const Start = Http({ apisRoute: "apis" }, { domain, getSchemaByPath, httpCodes, routers });
 Start();

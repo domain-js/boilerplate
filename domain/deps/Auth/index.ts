@@ -21,13 +21,14 @@ export function Main(cnf: any, deps: Deps) {
     utils: { randStr },
     Sequelize,
     sequelize: { db: sequelize },
+    ModelBase,
     User,
     errors,
     consts,
   } = deps;
   const { DataTypes } = Sequelize;
 
-  class Model extends Sequelize.Model<Attrs, Attrs4Create> implements Attrs {
+  class Model extends ModelBase<Attrs, Attrs4Create> implements Attrs {
     public id!: number;
     public token!: string;
     public deviceId?: string;

@@ -65,8 +65,6 @@ export const Services = (cnf: Cnf, deps: TDeps) => {
   }
 
   // 检查 cia 是否已经准备好，如果没有，那说明有多余的regist，或者话句话说有缺失的link
-  // TODO 暂时不引入cia, 等系统可以正常启动运行后再考虑引入
-  /*
   if (!cia.checkReady()) {
     console.log("cia lost link: %o", cia.getUnlinks());
     throw Error("CIA has not been ready");
@@ -82,7 +80,6 @@ export const Services = (cnf: Cnf, deps: TDeps) => {
       return res;
     };
   };
-  */
 
   // 自动记录 logging
   const logging = <T extends (...args: any[]) => any>(method: T, path: string) =>
@@ -109,7 +106,7 @@ export const Services = (cnf: Cnf, deps: TDeps) => {
     handle(
       pickMethods(services),
       graceful.runnerAsync,
-      // autoCIA, // TODO 暂时不引入 cia
+      autoCIA,
       parallelCtl,
       output,
       validator,

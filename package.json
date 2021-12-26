@@ -27,6 +27,7 @@
     "@domain.js/main": "^0.1.5",
     "@types/text-table": "^0.2.2",
     "gm": "^1.23.1",
+    "lodash": "^4.17.21",
     "text-table": "^0.2.0"
   },
   "devDependencies": {
