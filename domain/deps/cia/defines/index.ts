@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import type { Deps } from "..";
+import type { Deps } from "../Deps";
 
 const simples = fs
   .readFileSync(path.resolve(__dirname, "simples.csv"))
@@ -9,7 +9,7 @@ const simples = fs
   .split("\n")
   .map((x) => x.trim().split(","));
 
-export function Defines(cnf: any, deps: Deps) {
+export function Defines(cnf: any, deps: Pick<Deps, "_" | "consts">) {
   const {
     _,
     consts: { MODELS },
@@ -37,5 +37,3 @@ export function Defines(cnf: any, deps: Deps) {
 
   return defines;
 }
-
-module.exports = Defines;

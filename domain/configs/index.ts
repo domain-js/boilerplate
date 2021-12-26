@@ -4,7 +4,7 @@ import { schema } from "./cnf.schema";
 
 const cfg = Cfg(process.env, schema);
 
-const storagePath = cfg("STORAGE_PATH") || path.resolve(__dirname, "../../../storage");
+const storagePath = cfg("STORAGE_PATH") || path.resolve(__dirname, "../../storage");
 
 type VERBS = ("post" | "get" | "put" | "patch" | "delete")[];
 export const cnf = {
@@ -13,7 +13,7 @@ export const cnf = {
     "request" /** axios 封装后的模块 */,
     "cache" /** 内存级 LRU cache 模块 */,
     "checker" /** 常见的检测功能模块 */,
-    "cia" /** 轻量级任务模块，取代传统的事件处理 */,
+    "myCia" /** 轻量级任务模块，取代传统的事件处理 */,
     "counter" /** 基于 redis hash 数据类型的计数器模块 */,
     "cron" /** 计划任务模块，周期性任务模块 */,
     "graceful" /** 优雅重启相关模块 */,

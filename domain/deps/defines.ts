@@ -4,6 +4,7 @@ import * as hUser from "./hUser";
 import * as hSession from "./hSession";
 import * as User from "./User";
 import * as Auth from "./Auth";
+import * as cia from "./cia";
 
 export const Modules = {
   Auth,
@@ -11,4 +12,5 @@ export const Modules = {
   getOrThrown,
   hUser,
   hSession,
+  cia,
 };

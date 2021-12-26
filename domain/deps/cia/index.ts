@@ -1,14 +1,10 @@
 import * as Table from "text-table";
-import { ReadonlyArray2union } from "@domain.js/main/dist/types/index";
 import type { TDeps } from "../../deps";
+import { Deps } from "./Deps";
 
 export { Before } from "./Before";
 
-export const Deps = ["_", "logger", "graceful", "consts", "schema", "cia"] as const;
-
-export type Deps = Pick<TDeps, ReadonlyArray2union<typeof Deps>>;
-
-type Define = Parameters<TDeps["cia"]["regist"]>;
+type Define = Parameters<TDeps["myCia"]["regist"]>;
 
 export function Main(cnf: any, deps: Deps, defines: Define[]) {
   const {
@@ -16,20 +12,22 @@ export function Main(cnf: any, deps: Deps, defines: Define[]) {
     graceful,
     logger,
     consts: { MODELS },
-    cia,
+    myCia,
   } = deps;
 
   const modelNames = new Set<string>(MODELS);
 
+  console.log("defines", defines);
   for (const [name, ...rest] of defines) {
-    if (name.startsWith("domain.")) cia.domainPaths.add(name);
-    if (modelNames.has(name.split(".")[0])) cia.modelHooks.add(name);
-    cia.regist(name, ...rest);
+    if (name.startsWith("domain.")) myCia.domainPaths.add(name);
+    if (modelNames.has(name.split(".")[0])) myCia.modelHooks.add(name);
+    console.log(name, ...rest);
+    myCia.regist(name, ...rest);
   }
 
   const head = ["Name", "P, D, DN, E", "Types(P, D, DN, E);"];
   const printStats = () => {
-    const stats = cia.getStats();
+    const stats = myCia.getStats();
     const list = [head];
     const data = _.chain(stats)
       .map((obj, name) => Object.assign(obj, { name }))
@@ -46,10 +44,10 @@ export function Main(cnf: any, deps: Deps, defines: Define[]) {
       ]);
     }
     const table = Table(list);
-    logger.info(`System exiting, cia stats:\n${table}`);
+    logger.info(`System exiting, myCia stats:\n${table}`);
   };
 
   graceful.exit(printStats);
 
-  return cia;
+  return myCia;
 }
