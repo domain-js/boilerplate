@@ -1,4 +1,3 @@
-import * as util from "util";
 import { ReadonlyArray2union } from "@domain.js/main/dist/types";
 import * as Table from "text-table";
 import { MODELS } from "../../consts";
@@ -54,16 +53,19 @@ export function Main(cnf: any, deps: Deps) {
   const Models = _.pick(deps, MODELS);
 
   for (const name of cia.modelHooks) {
-    const [model, hook] = name.split(".");
+    const [model, hook] = name.split(".") as [
+      ReadonlyArray2union<typeof MODELS>,
+      "beforeChange" | "afterChange",
+    ];
     const Model = Models[model];
     if (defineHooks[hook]) {
       for (const h of defineHooks[hook]) {
-        Model.addHook(h, (instance, option) => {
+        (Model as any).addHook(h, (instance: any, option: any) => {
           cia.submit(name, [instance, option]);
         });
       }
     } else {
-      Model.addHook(hook, (instance, option) => {
+      (Model as any).addHook(hook, (instance: any, option: any) => {
         cia.submit(name, [instance, option]);
       });
     }
@@ -88,7 +90,7 @@ export function Main(cnf: any, deps: Deps) {
     Model.getByPk = cache.caching(Model.getByPk, MODEL_GET_BY_PK, cacheKeyFn, hitFn(name));
 
     console.log(`${name}.afterChange`);
-    cia.link(`${name}.afterChange`, "cleanGetByPkCache", ([data]) => {
+    cia.link(`${name}.afterChange`, "cleanGetByPkCache", ([data]: [any]) => {
       cache.del(cacheKeyFn(data[pkName]));
     });
   }
@@ -105,7 +107,7 @@ export function Main(cnf: any, deps: Deps) {
       list.push([name, hits, misseds, rate.toFixed(6)]);
     }
     const table = Table(
-      [head].concat(_.sortBy(list, "3")).map((x) => x.map(_.toString)),
+      [head].concat((_ as any).sortBy(list, "3")).map((x) => x.map(_.toString)),
       { align },
     );
 

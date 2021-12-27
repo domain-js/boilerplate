@@ -8,6 +8,7 @@ yarn-error.log*
 package-lock.json
 *.js
 *.d.ts
+test.ts
 
 # Runtime data
 pids
