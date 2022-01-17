@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest ./src --coverage",
     "build": "tsc && cp ./src/domain/deps/cia/defines/simples.csv ./dist/domain/deps/cia/defines/simples.csv",
-    "autoLoad": "domain-cli loadDeps . ts && domain-cli loadServices . ts && domain-cli deepLoadModule ./src/services/_schemas ./src/services/schemas.ts"
+    "autoLoad": "ts-node ./node_modules/.bin/domain-cli loadDeps ./src/domain/deps ts && domain-cli loadServices . ts && domain-cli loadSchemas ./ ts"
   },
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/domain-js/boilerplate#readme",
   "dependencies": {
-    "@domain.js/main": "^0.1.5",
+    "@domain.js/main": "^0.1.7",
     "@types/text-table": "^0.2.2",
     "gm": "^1.23.1",
     "lodash": "^4.17.21",
