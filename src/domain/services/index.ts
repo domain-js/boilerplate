@@ -2,11 +2,11 @@ import * as _ from "lodash";
 import { GetSchemaByPath } from "@domain.js/main/dist/http/defines";
 import { Cnf } from "../configs";
 import { TDeps } from "../deps";
-import defines from "./defines";
 import output from "./_output";
 import parallels from "./_parallels";
 import { errors } from "../errors";
 import schemas = require("./schemas");
+import defines = require("./defines");
 
 export const getSchemaByPath: GetSchemaByPath = _.memoize((path) => {
   const key = path.replace(".", "/schemas/");
@@ -62,7 +62,7 @@ export const Services = (cnf: Cnf, deps: TDeps) => {
 
   const services = {};
   for (const x of Object.keys(defines)) {
-    _.set(services, x, defines[x as keyof typeof defines](cnf, deps));
+    _.set(services, x, defines[x as keyof typeof defines].Main(cnf, deps));
   }
 
   // 检查 cia 是否已经准备好，如果没有，那说明有多余的regist，或者话句话说有缺失的link
