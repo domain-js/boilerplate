@@ -6,13 +6,14 @@ import defines from "./defines";
 import output from "./_output";
 import parallels from "./_parallels";
 import { errors } from "../errors";
+import schemas = require("./schemas");
 
-const schemas = {};
-export const getSchemaByPath: GetSchemaByPath = (path) => {
-  const _schema = _.get(schemas, path);
+export const getSchemaByPath: GetSchemaByPath = _.memoize((path) => {
+  const key = path.replace(".", "/schemas/");
+  const _schema = schemas[key as keyof typeof schemas];
   if (!_schema) throw errors.notFound("该接口不存在或未定义参数 schema");
-  return _schema;
-};
+  return [_schema.profile, _schema.params];
+});
 
 export const Services = (cnf: Cnf, deps: TDeps) => {
   const {
@@ -87,7 +88,7 @@ export const Services = (cnf: Cnf, deps: TDeps) => {
 
   // 自动参数校验
   const validator = <T extends (...args: any[]) => any>(method: T, path: string) => {
-    const _schema = _.get(schemas, path);
+    const _schema = getSchemaByPath(path);
     if (!_schema) return method;
     return schema.auto(method, _schema, errors.domainMethodCallArgsInvalid, path);
   };
