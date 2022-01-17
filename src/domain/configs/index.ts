@@ -4,7 +4,7 @@ import { schema } from "./cnf.schema";
 
 const cfg = Cfg(process.env, schema);
 
-const storagePath = cfg("STORAGE_PATH") || path.resolve(__dirname, "../../storage");
+const storagePath = cfg("STORAGE_PATH") || path.resolve(__dirname, "../../../storage");
 
 type VERBS = ("post" | "get" | "put" | "patch" | "delete")[];
 export const cnf = {

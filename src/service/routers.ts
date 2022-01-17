@@ -6,8 +6,6 @@ import { Router } from "@domain.js/main/dist/http/router";
  * 方便开发人员快速的查找定位问题
  */
 
-const IS_LIST = true;
-
 export function routers(r: ReturnType<typeof Router>) {
   /** 首页默认路由 */
   r.get("/", "home.index");
