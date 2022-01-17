@@ -1,20 +1,20 @@
 // domain-cli 自动生成
-import * as getOrThrown from "./getOrThrown";
-import * as hUser from "./hUser";
-import * as hSession from "./hSession";
-import * as User from "./User";
 import * as Auth from "./Auth";
 import * as ModelBase from "./ModelBase";
-import * as modelsAfter from "./modelsAfter";
+import * as User from "./User";
 import * as cia from "./cia";
+import * as getOrThrown from "./getOrThrown";
+import * as hSession from "./hSession";
+import * as hUser from "./hUser";
+import * as modelsAfter from "./modelsAfter";
 
-export const Modules = {
+export = {
   Auth,
-  User,
   ModelBase,
-  modelsAfter,
-  getOrThrown,
-  hUser,
-  hSession,
+  User,
   cia,
+  getOrThrown,
+  hSession,
+  hUser,
+  modelsAfter,
 };

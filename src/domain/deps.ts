@@ -3,8 +3,8 @@ import { Main, DM } from "@domain.js/main";
 import { cnf } from "./configs";
 import { errors } from "./errors";
 import * as consts from "./consts";
-import { Modules } from "./deps/defines";
 import utils from "./utils";
+import Modules = require("./deps/defines");
 
 const Start = Main(cnf.features);
 const defaults = Start(cnf);
