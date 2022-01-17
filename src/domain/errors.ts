@@ -20,6 +20,7 @@ const defines = [
   ["userMobileDuplication", "The user mobile exist already"],
   ["schemesUnmatched", "Schema match faild"],
   ["newPasswordSameOriginPassword", "Cannt set the password that be equal last password"],
+  ["taskURLMustBeString", "Task url must be a string and non-empty"],
 ] as const;
 
 export const errors = Object.freeze({ ...basicErrors, ...Errors(defines) });
