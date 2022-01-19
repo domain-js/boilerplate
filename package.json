@@ -4,7 +4,7 @@
   "description": "DDD boilerplate",
   "main": "dist/index.js",
   "scripts": {
-    "test": "jest ./src --coverage",
+    "test": "jest ./src --coverage --passWithNoTests",
     "build": "tsc && cp ./src/domain/deps/cia/defines/simples.csv ./dist/domain/deps/cia/defines/simples.csv",
     "prepare": "husky install",
     "lint-staged": "lint-staged",

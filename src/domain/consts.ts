@@ -14,7 +14,7 @@ export const USER_SECRET_INFO_KEYS = [
   "role",
 ] as const;
 
-// token 有效期, 单位秒
+/** token 有效期, 单位秒 */
 export const TOKEN_LIFE_SECONDS = 7 * 86400;
 
 // 密码错误次数, 超出锁定 IP 一段时间
