@@ -12,7 +12,7 @@ export type Params = {
 export const params = {
   description: "注册用户",
   type: "object",
-  required: ["name", "mobile", "password", "code"],
+  required: ["name", "mobile", "password"],
   additionalProperties: false,
   properties: {
     name: {
