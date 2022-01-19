@@ -5,3 +5,4 @@ fi
 . "$(dirname "$0")/_/husky.sh"
 
 npm run autoLoad && npm run lint-staged && npm run build 
+npm test
