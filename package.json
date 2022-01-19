@@ -6,6 +6,9 @@
   "scripts": {
     "test": "jest ./src --coverage",
     "build": "tsc && cp ./src/domain/deps/cia/defines/simples.csv ./dist/domain/deps/cia/defines/simples.csv",
+    "prepare": "husky install",
+    "lint-staged": "lint-staged",
+    "lint-staged:js": "eslint --ext .js,.ts",
     "autoLoad": "ts-node ./node_modules/.bin/domain-cli loadDeps ./src/domain/deps ts && domain-cli loadServices . ts && domain-cli loadSchemas ./ ts"
   },
   "repository": {
