@@ -3,6 +3,7 @@ import * as Auth from "./Auth";
 import * as ModelBase from "./ModelBase";
 import * as User from "./User";
 import * as cia from "./cia";
+import * as cronJob from "./cronJob";
 import * as getOrThrown from "./getOrThrown";
 import * as hSession from "./hSession";
 import * as hUser from "./hUser";
@@ -13,6 +14,7 @@ export = {
   ModelBase,
   User,
   cia,
+  cronJob,
   getOrThrown,
   hSession,
   hUser,
