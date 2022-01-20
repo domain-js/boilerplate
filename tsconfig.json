@@ -8,6 +8,5 @@
     "strict": true,
     "rootDir": "./src"
   },
-  "include": ["./src/domain", "./src/service"],
   "exclude": ["./domain/**/*.test.ts", "./domain/**/samples/*", "node_modules", "dist"]
 }
