@@ -36,7 +36,7 @@ export const cnf = {
     proxyIps: cfg("PROXY_IPS"),
     host: cfg("HTTP_HOST"),
     port: cfg("HTTP_PORT"),
-    apisRoute: "/apis",
+    apisRoute: "apis",
     bodyMaxBytes: 10 * 1024 * 1024,
   } as HttpCnf,
 
