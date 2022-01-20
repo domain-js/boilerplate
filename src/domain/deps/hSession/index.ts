@@ -1,5 +1,5 @@
 import { ReadonlyArray2union } from "@domain.js/main/dist/types";
-import { Cnf } from "../../configs";
+import { Cnf } from "../../../configs";
 import type { TDeps } from "../../deps";
 
 export const Deps = ["errors", "Auth"] as const;

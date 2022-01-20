@@ -1,10 +1,11 @@
 import * as path from "path";
 import { Cfg } from "@domain.js/main";
+import type { Cnf as HttpCnf } from "@domain.js/main/dist/http/defines";
 import { schema } from "./cnf.schema";
 
 const cfg = Cfg(process.env, schema);
 
-const storagePath = cfg("STORAGE_PATH") || path.resolve(__dirname, "../../../storage");
+const storagePath = cfg("STORAGE_PATH") || path.resolve(__dirname, "../../storage");
 
 type VERBS = ("post" | "get" | "put" | "patch" | "delete")[];
 export const cnf = {
@@ -30,11 +31,20 @@ export const cnf = {
   // 系统主域名
   domain: cfg("DOMAIN"),
 
+  // http 服务相关配置
+  http: {
+    proxyIps: cfg("PROXY_IPS"),
+    host: cfg("HTTP_HOST"),
+    port: cfg("HTTP_PORT"),
+    apisRoute: "/apis",
+    bodyMaxBytes: 10 * 1024 * 1024,
+  } as HttpCnf,
+
   // cache 配置, 参考 https://github.com/isaacs/node-lru-cache
   cache: {
     isMulti: true,
     max: 5000,
-  },
+  } as const,
 
   // 模式，手动模式下，一切自动执行的脚本需要停止
   mode: cfg("MODE") || "auto",

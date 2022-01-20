@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 import { GetSchemaByPath } from "@domain.js/main/dist/http/defines";
-import { Cnf } from "../configs";
+import { Cnf } from "../../configs";
 import { TDeps } from "../deps";
 import output from "./_output";
 import parallels from "./_parallels";

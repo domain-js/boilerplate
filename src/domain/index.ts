@@ -1,4 +1,4 @@
-import { cnf } from "./configs";
+import { cnf } from "../configs";
 import { deps } from "./deps";
 import { Services } from "./services";
 

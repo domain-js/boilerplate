@@ -3,7 +3,7 @@ import * as path from "path";
 import * as Table from "text-table";
 import { ReadonlyArray2union } from "@domain.js/main/dist/types/index";
 import type { TDeps } from "../../deps";
-import { Cnf } from "../../configs";
+import { Cnf } from "../../../configs";
 
 export const Deps = ["_", "logger", "cron", "graceful", "parallel"] as const;
 

@@ -1,4 +1,4 @@
-import { Cnf } from "../../configs";
+import { Cnf } from "../../../configs";
 import type { TDeps } from "../../deps";
 import { Profile } from "../_schemas/profile";
 import { Profile as ProfileHasToken } from "../_schemas/profile-has-token";
