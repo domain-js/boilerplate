@@ -79,7 +79,7 @@ export function Main(cnf: any, deps: Deps) {
     }
 
     toJSON() {
-      return _.omit(this.get(), USER_PROTECT_FIELDS) as any;
+      return _.omit(this.get(), USER_PROTECT_FIELDS);
     }
   }
   Model.init(
@@ -128,8 +128,8 @@ export function Main(cnf: any, deps: Deps) {
       },
       role: {
         type: DataTypes.ENUM,
-        values: ["admin", "volunteer"],
-        defaultValue: "volunteer",
+        values: ["admin", "member"],
+        defaultValue: "member",
         allowNull: false,
       },
       loginTimes: {

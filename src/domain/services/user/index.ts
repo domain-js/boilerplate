@@ -15,22 +15,11 @@ export function Main(cnf: any, deps: TDeps) {
 
   const { USER_SECRET_INFO_KEYS } = consts;
 
-  // 允许游客访问
-  const ALLOW_GUEST_ACCESS = true;
-  // 不允许游客访问
-  const NOT_ALLOW_GUEST_ACCESS = false;
-
-  const _check = async (profile: Profile, id?: number, guestAllowed = NOT_ALLOW_GUEST_ACCESS) => {
-    let isAdmin = false;
-    let session;
+  const _check = async (profile: Profile, id?: number) => {
     let user;
 
-    if (typeof profile.token === "string") {
-      session = await hSession(profile);
-      isAdmin = session.role === "admin";
-    }
-
-    if (!guestAllowed && !profile.token) throw errors.notAllowed();
+    const session = await hSession(profile);
+    const isAdmin = session.role === "admin";
 
     if (typeof id === "number") user = await getOrThrown(User, id);
 
@@ -58,7 +47,7 @@ export function Main(cnf: any, deps: TDeps) {
   };
 
   const list = async (profile: Profile, params: ListParams) => {
-    const { isAdmin } = await _check(profile, undefined, ALLOW_GUEST_ACCESS);
+    const { isAdmin } = await _check(profile);
     const { _includeSecretInfo } = params;
 
     const { rows, count } = await rest.list(User as TModel, params);
@@ -75,7 +64,7 @@ export function Main(cnf: any, deps: TDeps) {
   };
 
   const detail = async (profile: Profile, params: DetailParams) => {
-    const { isAdmin, user } = await _check(profile, params.id, ALLOW_GUEST_ACCESS);
+    const { isAdmin, user } = await _check(profile, params.id);
     if (!user) throw errors.notFound("user", params.id);
 
     const json = _.omit(user.toJSON(), isAdmin ? [] : USER_SECRET_INFO_KEYS);

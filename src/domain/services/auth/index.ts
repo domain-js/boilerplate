@@ -18,12 +18,12 @@ export function Main(cnf: Cnf, deps: TDeps) {
     await user.increment("loginTimes");
     await user.update({ lastSignedAt: new Date() }, { silent: true, hooks: false });
     const json = user.toJSON ? user.toJSON() : user;
-    json.auth = auth.toJSON();
-    json.token = json.auth.token;
-    json._type = "user";
-    json._id = `user-${json.id}`;
-
-    return json;
+    return Object.assign(json, {
+      auth: auth.toJSON(),
+      token: auth.token,
+      _type: "user",
+      _id: `user-${json.id}`,
+    });
   };
 
   const remove = async ({ token }: ProfileHasToken) => {

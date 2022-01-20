@@ -21,7 +21,6 @@ export function Main(cnf: any, deps: Deps) {
   // 注册默认hook
   const {
     _,
-    async,
     cia,
     cache,
     logger,
@@ -87,9 +86,14 @@ export function Main(cnf: any, deps: Deps) {
     const Model = Models[name];
     const cacheKeyFn = getCacheKeyFn(name);
     const pkName = Model.primaryKeyAttributes ? Model.primaryKeyAttributes[0] : "id";
-    Model.getByPk = cache.caching(Model.getByPk, MODEL_GET_BY_PK, cacheKeyFn, hitFn(name));
+    // 这里之所以bind是为了 getByPk 内部的this正确
+    Model.getByPk = cache.caching(
+      Model.getByPk.bind(Model),
+      MODEL_GET_BY_PK,
+      cacheKeyFn,
+      hitFn(name),
+    );
 
-    console.log(`${name}.afterChange`);
     cia.link(`${name}.afterChange`, "cleanGetByPkCache", ([data]: [any]) => {
       cache.del(cacheKeyFn(data[pkName]));
     });
