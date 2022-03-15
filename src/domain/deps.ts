@@ -1,8 +1,9 @@
+import { DM, Main } from "@domain.js/main";
 import { ReadonlyArray2union } from "@domain.js/main/dist/types";
-import { Main, DM } from "@domain.js/main";
+
 import { cnf } from "../configs";
-import { errors } from "./errors";
 import * as consts from "./consts";
+import { errors } from "./errors";
 import utils from "./utils";
 import Modules = require("./deps/defines");
 

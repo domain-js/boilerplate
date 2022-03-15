@@ -1,13 +1,19 @@
 {
   "compilerOptions": {
-    "target": "es2018",
+    "target": "es2021",
     "module": "commonjs",
     "moduleResolution": "node",
     "declaration": false,
     "outDir": "./dist",
     "strict": true,
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "esModuleInterop": true
   },
-  "include": ["./src/domain", "./src/service", "src/configs"],
-  "exclude": ["./domain/**/*.test.ts", "./domain/**/samples/*", "node_modules", "dist"]
+  "exclude": [
+    "./src/domain/**/*.test.ts",
+    "./src/domain/**/samples/*",
+    "node_modules",
+    "dist",
+    "./test*"
+  ]
 }

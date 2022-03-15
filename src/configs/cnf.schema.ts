@@ -1,6 +1,7 @@
 export const schema = {
   description: "Config data schema definition",
   type: "object",
+  required: ["AES_KEY"],
   properties: {
     NODE_ENV: {
       description: "进程启动环境",

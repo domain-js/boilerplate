@@ -1,1 +1,5 @@
 Auth.afterDestroy,cleanCache,1000
+Demand.afterCreate,sendSMS,1000
+socket.push,publish2redis,1000
+online,publish2redis,1000
+offline,publish2redis,1000

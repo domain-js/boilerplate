@@ -1,4 +1,5 @@
-import * as Table from "text-table";
+import Table = require("text-table");
+
 import type { TDeps } from "../../deps";
 import { Deps } from "./Deps";
 

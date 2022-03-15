@@ -1,9 +1,10 @@
+import { ReadonlyArray2union } from "@domain.js/main/dist/types/index";
 import * as fs from "fs";
 import * as path from "path";
-import * as Table from "text-table";
-import { ReadonlyArray2union } from "@domain.js/main/dist/types/index";
-import type { TDeps } from "../../deps";
+import Table = require("text-table");
+
 import { Cnf } from "../../../configs";
+import type { TDeps } from "../../deps";
 
 export const Deps = ["_", "logger", "cron", "graceful", "parallel"] as const;
 
@@ -44,7 +45,7 @@ export function Main(cnf: Cnf, deps: Deps) {
     const data = _.sortBy(cron.getStats(), (x) => -x.failds);
     const list = [head].concat(
       data.map((x) => {
-        if (x.avgMS == null) x.avgMS = 0;
+        if (x.avgMS === null) x.avgMS = 0;
         // 这里要让打印的字段穿对齐，因此 toFixed(4) 但是这样类型就变成 string 无法赋值给 number 了
         // 所以这里强制 as any
         x.avgMS = x.avgMS.toFixed(4) as any;

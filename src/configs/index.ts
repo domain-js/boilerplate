@@ -1,6 +1,7 @@
-import * as path from "path";
 import { Cfg } from "@domain.js/main";
-import type { Cnf as HttpCnf } from "@domain.js/main/dist/http/defines";
+import { Cnf as HttpCnf } from "@domain.js/main/dist/http/defines";
+import * as path from "path";
+
 import { schema } from "./cnf.schema";
 
 const cfg = Cfg(process.env, schema);
@@ -8,6 +9,17 @@ const cfg = Cfg(process.env, schema);
 const storagePath = cfg("STORAGE_PATH") || path.resolve(__dirname, "../../storage");
 
 type VERBS = ("post" | "get" | "put" | "patch" | "delete")[];
+
+// http 服务相关配置
+const http: HttpCnf = {
+  proxyIps: cfg("PROXY_IPS"),
+  host: cfg("HTTP_HOST"),
+  port: Number(cfg("HTTP_PORT") || 8088),
+  apisRoute: "apis",
+  socket: true,
+  bodyMaxBytes: 10 * 1024 * 1024,
+};
+
 export const cnf = {
   features: [
     "aes" /** AES 加解密模块 */,
@@ -32,13 +44,7 @@ export const cnf = {
   domain: cfg("DOMAIN"),
 
   // http 服务相关配置
-  http: {
-    proxyIps: cfg("PROXY_IPS"),
-    host: cfg("HTTP_HOST"),
-    port: cfg("HTTP_PORT"),
-    apisRoute: "apis",
-    bodyMaxBytes: 10 * 1024 * 1024,
-  } as HttpCnf,
+  http,
 
   // cache 配置, 参考 https://github.com/isaacs/node-lru-cache
   cache: {
@@ -54,6 +60,13 @@ export const cnf = {
     allowUnionTypes: true,
     coerceTypes: true,
     useDefaults: true,
+  },
+
+  // 在线状态相关配置
+  online: {
+    REDIS_KEY: "online",
+    /** 自动下线时长, 单位秒 */
+    autoOfflineSeconds: 300,
   },
 
   // @domain.js/axios 配置信息
@@ -89,7 +102,7 @@ export const cnf = {
   },
 
   aes: {
-    key: cfg("AES_KEY"),
+    key: cfg("AES_KEY") || "__AES_KEY__",
   },
 
   /** 数据库配置 */
@@ -133,6 +146,16 @@ export const cnf = {
     keyPrefix: cfg("REDIS_PRE") || "DJD::",
   },
 
+  /** socket 推送相关设置 */
+  socket: {
+    channels: new Set([
+      /** 推送给某个个人的消息 */
+      "single",
+      /** 推送给某个 room 全体成员的消息 */
+      "room",
+    ]),
+  },
+
   /** 文件上传的若干设定 */
   upload: {
     /** 文件存储路径 */
@@ -157,8 +180,11 @@ export const cnf = {
       ".odt",
     ]),
 
+    /** 最大允许上传的文件 */
+    maxFileBytes: 100 * 1024 * 1024,
+
     /** 文件下载路径 */
-    accessUrl: `${cfg("CDN_ROOT")}/upload-files`,
+    accessUrl: cfg("CDN_ROOT") || ".",
   },
 
   logger: {

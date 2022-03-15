@@ -16,13 +16,13 @@ export function After(...args: any[]) {
     },
   } = deps;
 
-  const cacheKeyFn = (token: string) => `LoginToken: ${token}`;
-
   Model.readUserByToken = cache.caching(
     Model.readUserByToken.bind(Model),
     AUTH_READ_USER_BY_TOKEN,
-    cacheKeyFn,
+    Model.cacheKey,
   );
 
-  cia.link("Auth.afterDestroy", "cleanCache", ([{ token }]: any) => cache.del(cacheKeyFn(token)));
+  cia.link("Auth.afterDestroy", "cleanCache", ([{ token }]: any) =>
+    cache.del(Model.cacheKey(token)),
+  );
 }

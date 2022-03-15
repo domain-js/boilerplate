@@ -1,8 +1,9 @@
 import { Http } from "@domain.js/main";
-import { domain, getSchemaByPath } from "../domain";
+
+import { cnf } from "../configs";
+import { domain } from "../domain";
 import { httpCodes } from "./http-codes";
 import { routers } from "./routers";
-import { cnf } from "../configs";
 
-const Start = Http(cnf.http, { domain, getSchemaByPath, httpCodes, routers });
+const Start = Http(cnf.http, { domain, httpCodes, routers });
 Start();

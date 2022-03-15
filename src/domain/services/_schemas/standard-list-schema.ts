@@ -1,4 +1,4 @@
-export default (description: string, includes?: string[]) => {
+export default (description: string, includes?: string[], extra = {}) => {
   const params = {
     description,
     type: "object",
@@ -23,6 +23,7 @@ export default (description: string, includes?: string[]) => {
           enum: includes,
         },
       },
+      ...extra,
     },
   };
 

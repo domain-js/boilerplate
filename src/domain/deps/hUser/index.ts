@@ -1,11 +1,13 @@
 import { ReadonlyArray2union } from "@domain.js/main/dist/types/index";
+
 import { TDeps } from "../../deps";
 
-export const Deps = ["utils", "User", "consts", "hash", "errors"] as const;
+export const Deps = ["utils", "Demand", "User", "consts", "hash", "errors"] as const;
 
 export function Main(cnf: any, deps: Pick<TDeps, ReadonlyArray2union<typeof Deps>>) {
   const {
     utils: { inExpired },
+    Demand,
     hash,
     consts,
     errors,
@@ -14,14 +16,16 @@ export function Main(cnf: any, deps: Pick<TDeps, ReadonlyArray2union<typeof Deps
 
   const { LOGIN_ERROR_TIMES_MAX, LOGIN_ERROR_LOCK_IP_SECONDS } = consts;
 
-  const _auth = async (realIp: string, mobile: string, password?: string) => {
-    const user = await User.findOne({ where: { mobile } });
+  const _auth = async (realIp: string, account: string, password?: string, code?: string) => {
+    const user = await User.findOne({ where: { mobile: account } });
     if (!user) throw errors.loginNameOrPassword();
 
     if (password) {
       if (user.password !== User.password(password, user.salt)) {
         throw errors.loginNameOrPassword();
       }
+    } else if (code) {
+      await Demand.verify(account, code, "session");
     } else {
       throw errors.loginNameOrPassword();
     }
@@ -29,7 +33,7 @@ export function Main(cnf: any, deps: Pick<TDeps, ReadonlyArray2union<typeof Deps
     return user;
   };
 
-  const auth = async (realIp: string, mobile: string, password: string) => {
+  const auth = async (realIp: string, mobile: string, password?: string, code?: string) => {
     const countKey = `user-auth-error-timers-${realIp}`;
     const lockedAtKey = `user-auth-error-locked-${realIp}`;
 
@@ -45,7 +49,7 @@ export function Main(cnf: any, deps: Pick<TDeps, ReadonlyArray2union<typeof Deps
     }
 
     try {
-      const user = await _auth(realIp, mobile, password);
+      const user = await _auth(realIp, mobile, password, code);
       hash.del(countKey);
       hash.del(lockedAtKey);
       return user;

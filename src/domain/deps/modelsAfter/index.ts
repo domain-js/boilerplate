@@ -1,5 +1,6 @@
 import { ReadonlyArray2union } from "@domain.js/main/dist/types";
-import * as Table from "text-table";
+import Table = require("text-table");
+
 import { MODELS } from "../../consts";
 import { TDeps } from "../../deps";
 import { Relations } from "./relations";
@@ -87,12 +88,9 @@ export function Main(cnf: any, deps: Deps) {
     const cacheKeyFn = getCacheKeyFn(name);
     const pkName = Model.primaryKeyAttributes ? Model.primaryKeyAttributes[0] : "id";
     // 这里之所以bind是为了 getByPk 内部的this正确
-    Model.getByPk = cache.caching(
-      Model.getByPk.bind(Model),
-      MODEL_GET_BY_PK,
-      cacheKeyFn,
-      hitFn(name),
-    );
+    Object.assign(Model, {
+      getByPk: cache.caching(Model.getByPk.bind(Model), MODEL_GET_BY_PK, cacheKeyFn, hitFn(name)),
+    });
 
     cia.link(`${name}.afterChange`, "cleanGetByPkCache", ([data]: [any]) => {
       cache.del(cacheKeyFn(data[pkName]));

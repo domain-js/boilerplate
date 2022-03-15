@@ -1,4 +1,5 @@
-import { ModelExtraAtts } from "@domain.js/main/dist/deps/rest/defines";
+import { ModelBase } from "@domain.js/main/dist/deps/sequelize";
+
 import type { Attrs as UserAttrs } from "../User";
 import type { Deps } from "./Deps";
 
@@ -18,17 +19,17 @@ type Attrs4Create = Omit<Attrs, "id">;
 
 export function Main(cnf: any, deps: Deps) {
   const {
-    utils: { randStr },
+    redis,
+    utils: { randStr, generateId },
     Sequelize,
     sequelize: { db: sequelize },
-    ModelBase,
     User,
     errors,
     consts,
   } = deps;
   const { DataTypes } = Sequelize;
 
-  class Model extends ModelBase<Attrs, Attrs4Create> implements Attrs {
+  class Auth extends ModelBase<Attrs, Attrs4Create> implements Attrs {
     public id!: number;
     public token!: string;
     public deviceId?: string;
@@ -36,8 +37,22 @@ export function Main(cnf: any, deps: Deps) {
     public onlineIp!: string;
     public creatorId!: number;
 
+    static allowIncludeCols = [];
+    static writableCols = [];
+    static editableCols = [];
+    static sort = {
+      default: "id",
+      allow: ["id", "name", "updatedAt", "createdAt"],
+    };
+
+    /**
+     * 生成一个 授权 auth
+     * @param user 用户
+     * @param onlineIp 用户 ip
+     * @param deviceId 用户设备 ID
+     */
     static generate(user: UserAttrs, onlineIp: string, deviceId?: string) {
-      return Model.create({
+      return Auth.create({
         token: `user_${randStr(64, "normal")}`,
         expiredAt: new Date(Date.now() + 1000 * (consts.TOKEN_LIFE_SECONDS || 1 * 86400)),
         deviceId,
@@ -46,8 +61,12 @@ export function Main(cnf: any, deps: Deps) {
       });
     }
 
+    /**
+     * 读取 user session 通过token
+     * @param token token 字符串
+     */
     static async readUserByToken(token: string) {
-      const auth = await Model.findOne({ where: { token } });
+      const auth = await Auth.findOne({ where: { token } });
       if (!auth) throw errors.tokenError(token);
       if (auth.expiredAt < new Date()) throw errors.tokenError(token);
       const user = await User.findByPk(auth.creatorId);
@@ -56,17 +75,45 @@ export function Main(cnf: any, deps: Deps) {
         throw errors.tokenErrorUserStatusDisabled(user.id, user.status);
       if (user.isDeleted === "yes") throw errors.tokenErrorUserBeenDeleted(user.id);
       const json = Object.assign(user.toJSON(), {
+        viewerId: "",
         auth: auth.toJSON(),
         token,
-        _type: "user",
+        _type: <const>"user",
         _id: `user-${user.id}`,
       });
 
       return json;
     }
+
+    /**
+     * 获取 session 在 redis 里的 key, 基于 token
+     * @param token
+     */
+    static cacheKey(token: string) {
+      return `LoginToken: ${token}`;
+    }
+
+    /**
+     * 读取 cache 里的 session 信息，基于 token
+     * @param token token 字符串
+     */
+    static async readSessionFromCache(token: string) {
+      const val = await redis.get(Auth.cacheKey(token));
+      if (!val) throw errors.tokenError();
+      return JSON.parse(val) as Awaited<ReturnType<typeof Auth.readUserByToken>>;
+    }
+
+    /**
+     * 更新cache里的token
+     * @param session 要更新的 session 数据
+     */
+    static async updateSession(session: { token: string }) {
+      const key = Auth.cacheKey(session.token);
+      await redis.update(key, JSON.stringify(session));
+    }
   }
 
-  Model.init(
+  Auth.init(
     {
       id: {
         type: DataTypes.INTEGER.UNSIGNED,
@@ -110,18 +157,7 @@ export function Main(cnf: any, deps: Deps) {
     },
   );
 
-  // Model 补充定义
-  const Expandeds: ModelExtraAtts = {
-    allowIncludeCols: [],
-    writableCols: ["name", "mobile", "password", "salt"],
-    editableCols: ["name", "password", "salt"],
-    sort: {
-      default: "id",
-      allow: ["id", "name", "updatedAt", "createdAt"],
-    },
-  };
-
-  return Object.assign(Model, Expandeds);
+  return Auth;
 }
 
 export type Session = ReturnType<ReturnType<typeof Main>["readUserByToken"]> extends Promise<

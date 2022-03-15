@@ -1,13 +1,16 @@
-import { ModelExtraAtts } from "@domain.js/main/dist/deps/rest/defines";
+import { ModelBase } from "@domain.js/main/dist/deps/sequelize";
 import { ReadonlyArray2union } from "@domain.js/main/dist/types/index";
+import * as otplib from "otplib";
+
+import { Cnf } from "../../../configs";
 import type { TDeps } from "../../deps";
 
 export const Deps = [
   "_",
   "U",
+  "aes",
   "cia",
   "Sequelize",
-  "ModelBase",
   "utils",
   "sequelize",
   "consts",
@@ -19,23 +22,35 @@ type Deps = Pick<TDeps, ReadonlyArray2union<typeof Deps>>;
 export interface Attrs {
   id: number;
   name: string;
+  avatar: string;
   mobile: string;
-  password: string;
-  salt: string;
   status: "enabled" | "disabled";
   role: "admin" | "member";
+  password?: string;
+  secret?: string;
+  salt?: string;
   loginTimes: number;
+  maxDiskMB: number;
+  usedDiskMB: number;
+  maxDocsNum: number;
+  usedDocsNum: number;
   lastSignedAt?: Date;
   deletorId?: number;
   isDeleted?: "yes" | "no";
 }
 type Attrs4Create = Omit<Attrs, "id">;
 
-export function Main(cnf: any, deps: Deps) {
+export function Main(cnf: Cnf, deps: Deps) {
+  const {
+    aes: { key: AES_KEY },
+    upload: { accessUrl },
+  } = cnf;
+  if (!AES_KEY) throw Error("请先设置 aes.key 值");
+
   const {
     _,
+    aes,
     U: { randStr, nt2space, md5 },
-    ModelBase,
     Sequelize,
     sequelize: { db: sequelize },
     consts: { USER_PROTECT_FIELDS },
@@ -43,37 +58,72 @@ export function Main(cnf: any, deps: Deps) {
 
   const { DataTypes } = Sequelize;
 
-  class Model extends ModelBase<Attrs, Attrs4Create> implements Attrs {
+  /** 重置安全信息的参数格式定义 */
+  interface Params {
+    /** 密码 */
+    password?: string;
+    /** 密码扰码 */
+    salt?: string;
+    /** Google 二次验证私钥 */
+    secret?: string;
+  }
+
+  class User extends ModelBase<Attrs, Attrs4Create> implements Attrs {
     public id!: number;
     public name!: string;
+    public avatar!: string;
     /* 用户手机号码 */
     public mobile!: string;
-    public password!: string;
+    public password?: string;
+    public secret?: string;
     public salt!: string;
     public status!: "enabled" | "disabled";
     public role!: "admin" | "member";
     public loginTimes!: number;
     public lastSignedAt?: Date;
+    public maxDiskMB!: number;
+    public usedDiskMB!: number;
+    public maxDocsNum!: number;
+    public usedDocsNum!: number;
     public deletorId?: number;
     public isDeleted?: "yes" | "no";
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
 
+    static allowIncludeCols = [];
+    static writableCols = ["name", "mobile", "password", "salt", "maxDiskMB", "maxDocsNum"];
+    static editableCols = ["name", "avatar", "password", "salt", "maxDiskMB", "maxDocsNum"];
+    static onlyAdminCols = ["maxDiskMB", "maxDocsNum"];
+    static sort = {
+      default: "id",
+      defaultDirection: "DESC" as const,
+      allow: ["id", "createdAt", "updatedAt"],
+    };
+
     static password(passwordMD5: string, salt: string) {
       return md5(`${passwordMD5}${salt}`);
     }
 
-    static genSaltAndPassword(password: string) {
-      const salt = randStr(16, "normal");
+    static resetSecurity(params: Params, resetSecret = false) {
+      if (params.password) {
+        params.password = md5(params.password);
+        params.salt = randStr(20, "normal");
+        params.password = User.password(params.password, params.salt);
+      }
 
-      return { salt, password: this.password(md5(password), salt) };
+      let secret;
+      if (resetSecret) {
+        secret = otplib.authenticator.generateSecret();
+        params.secret = aes.encrypt(secret, AES_KEY as string);
+      }
+
+      return secret;
     }
 
     async changeFiled(field: "name", value: string): Promise<void>;
-    async changeFiled(field: "mobile", value: string): Promise<void>;
     async changeFiled(field: "status", value: "enabled" | "disabled"): Promise<void>;
     async changeFiled(field: "role", value: "admin" | "member"): Promise<void>;
-    async changeFiled(field: "name" | "mobile" | "status" | "role", value: any): Promise<void> {
+    async changeFiled(field: "name" | "status" | "role", value: any): Promise<void> {
       this.set(field, value);
       await this.save({ fields: [field] });
     }
@@ -82,7 +132,8 @@ export function Main(cnf: any, deps: Deps) {
       return _.omit(this.get(), USER_PROTECT_FIELDS);
     }
   }
-  Model.init(
+
+  User.init(
     {
       id: {
         type: DataTypes.INTEGER.UNSIGNED,
@@ -96,10 +147,24 @@ export function Main(cnf: any, deps: Deps) {
         set(val: string) {
           (this as any).setDataValue("name", nt2space(val));
         },
-        unique: true,
         validate: {
           len: [1, 64],
         },
+      },
+      avatar: {
+        type: DataTypes.STRING,
+        get() {
+          const val = this.getDataValue("avatar");
+          if (!val) return undefined;
+          return `${accessUrl}/${val}`;
+        },
+        comment: "用户头像对应的文件ID",
+      },
+      secret: {
+        type: DataTypes.TEXT,
+        defaultValue: "",
+        allowNull: true,
+        comment: "Google 二次验证，安全码, aes 加密存储",
       },
       mobile: {
         type: DataTypes.STRING(30),
@@ -112,12 +177,13 @@ export function Main(cnf: any, deps: Deps) {
       },
       password: {
         type: DataTypes.TEXT,
-        allowNull: false,
+        allowNull: true,
         comment: "密码，混淆密码存储",
       },
       salt: {
         type: DataTypes.TEXT,
-        allowNull: false,
+        defaultValue: "",
+        allowNull: true,
         comment: "密码混淆，随机串",
       },
       status: {
@@ -142,6 +208,26 @@ export function Main(cnf: any, deps: Deps) {
         type: DataTypes.DATE,
         comment: "上次登录时间",
       },
+      maxDiskMB: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        defaultValue: 0,
+        comment: "允许的最大空间大小(MB)",
+      },
+      usedDiskMB: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        defaultValue: 0,
+        comment: "已使用的磁盘空间大小(MB)",
+      },
+      maxDocsNum: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        defaultValue: 0,
+        comment: "允许上传的文档最大数",
+      },
+      usedDocsNum: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        defaultValue: 0,
+        comment: "已上传的文档数量",
+      },
       deletorId: {
         type: DataTypes.INTEGER.UNSIGNED,
         defaultValue: 0,
@@ -162,21 +248,13 @@ export function Main(cnf: any, deps: Deps) {
       modelName: "User",
       tableName: "user",
       initialAutoIncrement: "10000",
-      hooks: {},
+      hooks: {
+        beforeCreate(instance) {
+          instance.salt = randStr(20, "normal");
+        },
+      },
     },
   );
 
-  // Model 补充定义
-  const Expandeds: ModelExtraAtts = {
-    allowIncludeCols: [],
-    writableCols: ["name", "mobile", "password", "salt"],
-    editableCols: ["name", "password", "salt"],
-    sort: {
-      default: "id",
-      defaultDirection: "DESC",
-      allow: ["id", "createdAt", "updatedAt"],
-    },
-  };
-
-  return Object.assign(Model, Expandeds);
+  return User;
 }

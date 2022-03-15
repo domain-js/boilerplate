@@ -2,6 +2,7 @@ export const httpCodes = {
   notFound: 404,
   notAllowed: 403,
   tokenError: 403,
+  accessPptAccessNotEnough: 403,
   tokenErrorUserNotExisits: 404,
   tokenErrorUserStatusDisabled: 403,
   tokenErrorUserBeenDeleted: 404,
